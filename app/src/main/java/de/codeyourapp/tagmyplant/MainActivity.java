@@ -2,7 +2,13 @@ package de.codeyourapp.tagmyplant;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -11,17 +17,23 @@ import com.budiyev.android.codescanner.AutoFocusMode;
 import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
+import com.budiyev.android.codescanner.ErrorCallback;
 import com.budiyev.android.codescanner.ScanMode;
 import com.google.zxing.Result;
 
 
 public class MainActivity extends AppCompatActivity {
     private CodeScanner mCodeScanner;
+    private int CAMERA_REQUEST_CODE = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // ask the user for the needed permissions to run the app
+        setupPermissions();
 
         // call of the function for the scanner below
         codeScanner();
@@ -57,23 +69,64 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // specify actions if there is an error within the CodeScanner
+        mCodeScanner.setErrorCallback(new ErrorCallback() {
+            @Override
+            public void onError(@NonNull Exception error) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {     // create a Logcat error-entry with the error message from the CodeScanner
+                        Log.e("Main", "Camera initialization error:"+error.getMessage());
+                    }
+                });
+            }
+        });
+
+        // specify actions if the scannerView is clicked
         scannerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCodeScanner.startPreview();
+                mCodeScanner.startPreview();    // the CodeScanner will start scanning if its ScanMode isn't set as "CONTINUOUS"
             }
         });
     }
 
+    // specify the actions when the user comes back in the app
     @Override
     protected void onResume() {
-        super.onResume();
-        mCodeScanner.startPreview();
+        super.onResume();               // do what is usually done
+        mCodeScanner.startPreview();    // start scanning for the case that the CodeScanner isn't scanning already
+    }
+
+    // specify the actions when the user leaves the app
+    @Override
+    protected void onPause() {
+        super.onPause();                    // do what is usually done
+        mCodeScanner.releaseResources();    // avoid memory leaks and release Resources for better performance
+    }
+
+    private void setupPermissions(){
+        int permission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            makeRequest();
+        }
+    }
+
+    private void makeRequest() {
+        ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
     }
 
     @Override
-    protected void onPause() {
-        mCodeScanner.releaseResources();
-        super.onPause();
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == CAMERA_REQUEST_CODE){
+            if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(this, "You need the camera permission to be able to use this app!", Toast.LENGTH_SHORT).show();
+            } else {
+                // successful request -> nothing to do
+            }
+        }else{
+            // do nothing
+        }
     }
 }
