@@ -10,6 +10,9 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,11 +24,19 @@ import com.budiyev.android.codescanner.ErrorCallback;
 import com.budiyev.android.codescanner.ScanMode;
 import com.google.zxing.Result;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 
 public class MainActivity extends AppCompatActivity {
+    /* code scanner variables */
     private CodeScanner mCodeScanner;
     private int CAMERA_REQUEST_CODE = 1;
 
+    /* dynamic listView variables*/
+    private ListView listView;
+    private ArrayList<String> stringArrayList;
+    private ArrayAdapter<String> stringArrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +48,11 @@ public class MainActivity extends AppCompatActivity {
 
         // call of the function for the scanner below
         codeScanner();
+
+        // initialize the dynamic listView element below the scanner
+        initListView();
     }
+
 
     private void codeScanner() {
         // create a net object for the text view element
@@ -52,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         mCodeScanner.setCamera(CodeScanner.CAMERA_BACK);    // which camera is used: back camera
         mCodeScanner.setFormats(CodeScanner.ALL_FORMATS);   // what formats can be scanned: all formats
         mCodeScanner.setAutoFocusMode(AutoFocusMode.SAFE);  // auto focus operates in fixed intervals
-        mCodeScanner.setScanMode(ScanMode.CONTINUOUS);      // scanner doesn't stop scanning
+        mCodeScanner.setScanMode(ScanMode.SINGLE);          // scanner stops scanning after every triggered result
         mCodeScanner.setAutoFocusEnabled(true);             // autofocus is enabled by default
         mCodeScanner.setFlashEnabled(false);                // flash lite is disabled by default
 
@@ -62,8 +77,15 @@ public class MainActivity extends AppCompatActivity {
             public void onDecoded(@NonNull final Result result) {
                 runOnUiThread(new Runnable() {       // define a new Runnable that is given to the UI-Thread
                     @Override
-                    public void run() {                           // override the run() function of the Runnable interface
-                        tv_textView.setText(result.getText());    // show the decoded text in the TextView element below the CodeScanner
+                    public void run() {  // override the run() function of the Runnable interface
+                        // show the last decoded text in the TextView element below the CodeScanner
+                        tv_textView.setText("Last Scan: "+result.getText());
+
+                        // add result to the dynamic listView below the scanner
+                        stringArrayList.add("Scan "+(stringArrayAdapter.getCount()+1)+": "+result.getText());
+
+                        // update the dynamic listView over its adapter
+                        stringArrayAdapter.notifyDataSetChanged();
                     }
                 });
             }
@@ -128,5 +150,17 @@ public class MainActivity extends AppCompatActivity {
         }else{
             // do nothing
         }
+    }
+
+    private void initListView() {
+        listView = (ListView) findViewById(R.id.listView);      // get the listView element from the XML-file
+
+        stringArrayList = new ArrayList<String>();              // constructor call for the string array list variable
+
+        // constructor call for the string array adapter and set context and layout
+        stringArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1,stringArrayList);
+
+        listView.setAdapter(stringArrayAdapter);                // set the adapter of the listView element
+
     }
 }
