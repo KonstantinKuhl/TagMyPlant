@@ -7,13 +7,17 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -41,10 +45,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> stringArrayList;
     private ArrayAdapter<String> stringArrayAdapter;
 
-    /* variables for swiping between activities*/
-    float x1, x2, y1, y2;
-    private RelativeLayout relativeLayout;
-
+    /*button and intent variables*/
+    private Button showScanResultsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +62,9 @@ public class MainActivity extends AppCompatActivity {
         // initialize the dynamic listView element below the scanner
         initListView();
 
-        swipeDetection();
+        // change activitiy when button ist pressed: resultActivity
+        showScanResults();
+
     }
 
 
@@ -175,41 +179,21 @@ public class MainActivity extends AppCompatActivity {
 
         // set the adapter of the listView element
         listView.setAdapter(stringArrayAdapter);
-
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private void swipeDetection(){
-
-        /*relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout);*/
-        listView.setOnTouchListener(new View.OnTouchListener() {
+    private void showScanResults(){
+        showScanResultsButton = (Button) findViewById(R.id.resultButton);
+        showScanResultsButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch(motionEvent.getAction()){
-                    case MotionEvent.ACTION_DOWN:
-                        x1 = motionEvent.getX();
-                        y1 = motionEvent.getY();
-                    case MotionEvent.ACTION_UP:
-                        x2 = motionEvent.getX();
-                        y2 = motionEvent.getY();
-                        if( (x1>x2) && (x1-x2 > 100) ){
-                            Toast.makeText(getApplicationContext(), "You swiped right!", Toast.LENGTH_SHORT).show();
-
-                            Intent intent = new Intent(MainActivity.this, SwipeUpActivity.class);
-                            intent.putStringArrayListExtra("stringArrayListMain",stringArrayList);
-                            startActivity(intent);
-                        }
-                        /*else if ( (x1<x2) && (x2-x1 > 100) ){
-                            Toast.makeText(getApplicationContext(), "You swiped left!", Toast.LENGTH_SHORT).show();
-
-                            Intent intent = new Intent(MainActivity.this, SwipeUpActivity.class);
-                            intent.putStringArrayListExtra("stringArrayListMain",stringArrayList);
-                            startActivity(intent);
-                        }*/
-                }
-            return false;
+            public void onClick(View view) {
+                Intent intentResults = new Intent(MainActivity.this, SwipeUpActivity.class);
+                intentResults.putStringArrayListExtra("stringArrayListMain",stringArrayList);
+                startActivity(intentResults);
             }
         });
-    }
+    };
 
 }
+
+
+

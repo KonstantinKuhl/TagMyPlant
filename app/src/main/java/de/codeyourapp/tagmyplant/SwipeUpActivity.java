@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -23,8 +24,8 @@ public class SwipeUpActivity extends AppCompatActivity {
     private ArrayList<String> stringArrayList;
     private ArrayAdapter<String> stringArrayAdapter;
 
-    private ConstraintLayout constraintLayout;
-    float x1, x2, y1, y2;
+    /* button and intent variables*/
+    private Button showScannerButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +35,8 @@ public class SwipeUpActivity extends AppCompatActivity {
         // initialize the dynamic listView element below the scanner
         initListView();
 
-        swipeDetection();
+        // change activity when button ist pressed: mainActivity
+        /*showScanner();*/
     }
 
     // initializes the dynamic listView element
@@ -54,35 +56,15 @@ public class SwipeUpActivity extends AppCompatActivity {
         listView.setAdapter(stringArrayAdapter);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private void swipeDetection() {
-        /*constraintLayout = findViewById(R.id.constraintLayout);*/
-        listView.setOnTouchListener(new View.OnTouchListener() {
+    private void showScanner(){
+        showScannerButton = (Button) findViewById(R.id.scannerButton);
+        showScannerButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        x1 = motionEvent.getX();
-                        y1 = motionEvent.getY();
-                    case MotionEvent.ACTION_UP:
-                        x2 = motionEvent.getX();
-                        y2 = motionEvent.getY();
-                        if ((x1 > x2) && (x1 - x2 > 100)) {
-                            Toast.makeText(getApplicationContext(), "You swiped right!", Toast.LENGTH_SHORT).show();
-
-                            Intent intent = new Intent(SwipeUpActivity.this, MainActivity.class);
-                            startActivity(intent);
-                        }
-/*                        else if ((x1 < x2) && (x2 - x1 > 100)) {
-                            Toast.makeText(getApplicationContext(), "You swiped left!", Toast.LENGTH_SHORT).show();
-
-                            Intent intent = new Intent(SwipeUpActivity.this, MainActivity.class);
-                            startActivity(intent);
-                        }*/
-                }
-            return false;
+            public void onClick(View view) {
+                Intent intentScanner = new Intent(SwipeUpActivity.this, MainActivity.class);
+                intentScanner.putStringArrayListExtra("stringArrayListMain",stringArrayList);
+                startActivity(intentScanner);
             }
         });
-    }
-
+    };
 }
