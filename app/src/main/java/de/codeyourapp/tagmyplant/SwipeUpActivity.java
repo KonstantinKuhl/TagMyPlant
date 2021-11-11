@@ -36,7 +36,7 @@ public class SwipeUpActivity extends AppCompatActivity {
         initListView();
 
         // change activity when button ist pressed: mainActivity
-        /*showScanner();*/
+        showScanner();
     }
 
     // initializes the dynamic listView element
@@ -62,7 +62,7 @@ public class SwipeUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intentScanner = new Intent(SwipeUpActivity.this, MainActivity.class);
-                intentScanner.putStringArrayListExtra("stringArrayListMain",stringArrayList);
+                intentScanner.putStringArrayListExtra("stringArrayListResults",stringArrayList);
                 startActivity(intentScanner);
             }
         });
