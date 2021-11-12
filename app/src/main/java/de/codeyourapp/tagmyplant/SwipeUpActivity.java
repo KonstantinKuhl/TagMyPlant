@@ -41,13 +41,13 @@ public class SwipeUpActivity extends AppCompatActivity {
 
     // initializes the dynamic listView element
     private void initListView() {
-        Intent intent = getIntent();
+        Intent mainIntent = getIntent();
 
         // get the listView element from the XML-file
         listView = (ListView) findViewById(R.id.listView);
 
         // constructor call for the string array list variable
-        stringArrayList = intent.getStringArrayListExtra("stringArrayListMain");
+        stringArrayList = mainIntent.getStringArrayListExtra("stringArrayListMain");
 
         // constructor call for the string array adapter and set context and layout
         stringArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, stringArrayList);

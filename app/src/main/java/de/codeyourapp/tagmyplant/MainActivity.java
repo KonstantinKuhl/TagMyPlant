@@ -1,6 +1,7 @@
 package de.codeyourapp.tagmyplant;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -168,11 +169,19 @@ public class MainActivity extends AppCompatActivity {
 
     // initializes the dynamic listView element
     private void initListView() {
+        // get intent from second activity
+        Intent resultIntent = getIntent();
+
         // get the listView element from the XML-file
         listView = (ListView) findViewById(R.id.listView);
 
         // constructor call for the string array list variable
-        stringArrayList = new ArrayList<String>();
+        if (resultIntent.getExtras() != null) {
+            stringArrayList = resultIntent.getStringArrayListExtra("stringArrayListResults");
+        }
+        else {
+            stringArrayList = new ArrayList<String>();
+        }
 
         // constructor call for the string array adapter and set context and layout
         stringArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1,stringArrayList);
