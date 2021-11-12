@@ -5,6 +5,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -15,6 +16,10 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class SwipeUpActivity extends AppCompatActivity {
@@ -26,6 +31,9 @@ public class SwipeUpActivity extends AppCompatActivity {
 
     /* button and intent variables*/
     private Button showScannerButton;
+
+    /* variables for data saving */
+    private static final String mainArrayList = "mainArrayList";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,15 +47,21 @@ public class SwipeUpActivity extends AppCompatActivity {
         showScanner();
     }
 
+    // specify the actions when the user leaves the app
+    @Override
+    protected void onPause() {
+        super.onPause();                    // do what is usually done
+        saveData();                         // save the data of the listView element in the storage
+    }
+
     // initializes the dynamic listView element
     private void initListView() {
-        Intent mainIntent = getIntent();
 
         // get the listView element from the XML-file
         listView = (ListView) findViewById(R.id.listView);
 
-        // constructor call for the string array list variable
-        stringArrayList = mainIntent.getStringArrayListExtra("stringArrayListMain");
+        // load the scanned data from the storage in form of an arrayList
+        loadData();
 
         // constructor call for the string array adapter and set context and layout
         stringArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, stringArrayList);
@@ -62,9 +76,29 @@ public class SwipeUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intentScanner = new Intent(SwipeUpActivity.this, MainActivity.class);
-                intentScanner.putStringArrayListExtra("stringArrayListResults",stringArrayList);
                 startActivity(intentScanner);
             }
         });
-    };
+    }
+
+    private void saveData(){
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(stringArrayList);
+        editor.putString(mainArrayList, json);
+        editor.apply();
+    }
+
+    private void loadData(){
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(mainArrayList, null);
+        Type type = new TypeToken<ArrayList<String>>() {}.getType();
+        stringArrayList = gson.fromJson(json, type);
+
+        if (stringArrayList == null){
+            stringArrayList = new ArrayList<>();
+        }
+    }
 }

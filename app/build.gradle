@@ -39,4 +39,7 @@ dependencies {
     //implementation for the barcode-scanner framework
     implementation 'com.budiyev.android:code-scanner:2.1.0'
 
+    //implementation for persistent data save transformation
+    implementation 'com.google.code.gson:gson:2.8.7'
+
 }

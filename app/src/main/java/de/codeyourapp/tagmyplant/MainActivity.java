@@ -10,6 +10,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,8 +31,11 @@ import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
 import com.budiyev.android.codescanner.ErrorCallback;
 import com.budiyev.android.codescanner.ScanMode;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.zxing.Result;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 
@@ -41,13 +45,16 @@ public class MainActivity extends AppCompatActivity {
     private CodeScanner mCodeScanner;
     private int CAMERA_REQUEST_CODE = 1;
 
-    /* dynamic listView variables*/
+    /* dynamic listView variables */
     private ListView listView;
     private ArrayList<String> stringArrayList;
     private ArrayAdapter<String> stringArrayAdapter;
 
-    /*button and intent variables*/
+    /* button and intent variables */
     private Button showScanResultsButton;
+
+    /* variables for data saving */
+    private static final String mainArrayList = "mainArrayList";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();                    // do what is usually done
         mCodeScanner.releaseResources();    // avoid memory leaks and release Resources for better performance
+        saveData();                         // save the data of the listView element in the storage
     }
 
     private void setupPermissions(){
@@ -170,18 +178,13 @@ public class MainActivity extends AppCompatActivity {
     // initializes the dynamic listView element
     private void initListView() {
         // get intent from second activity
-        Intent resultIntent = getIntent();
+       /* Intent resultIntent = getIntent();*/
 
         // get the listView element from the XML-file
         listView = (ListView) findViewById(R.id.listView);
 
-        // constructor call for the string array list variable
-        if (resultIntent.getExtras() != null) {
-            stringArrayList = resultIntent.getStringArrayListExtra("stringArrayListResults");
-        }
-        else {
-            stringArrayList = new ArrayList<String>();
-        }
+        // load the scan data from storage in form of a ArrayList
+        loadData();
 
         // constructor call for the string array adapter and set context and layout
         stringArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1,stringArrayList);
@@ -196,13 +199,31 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intentResults = new Intent(MainActivity.this, SwipeUpActivity.class);
-                intentResults.putStringArrayListExtra("stringArrayListMain",stringArrayList);
                 startActivity(intentResults);
             }
         });
-        
-    };
+    }
 
+    private void saveData(){
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(stringArrayList);
+        editor.putString(mainArrayList, json);
+        editor.apply();
+    }
+
+    private void loadData(){
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(mainArrayList, null);
+        Type type = new TypeToken<ArrayList<String>>() {}.getType();
+        stringArrayList = gson.fromJson(json, type);
+
+        if (stringArrayList == null){
+            stringArrayList = new ArrayList<>();
+        }
+    }
 }
 
 
