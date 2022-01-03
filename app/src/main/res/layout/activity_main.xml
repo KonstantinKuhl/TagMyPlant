@@ -12,14 +12,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".50"/>
+        app:layout_constraintGuide_percent="0.5" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".55"/>
+        app:layout_constraintGuide_percent="0.5" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
@@ -40,7 +40,7 @@
         app:flashButtonVisible="true"
         app:maskColor="#660E0000" />
 
-    <TextView
+<!--   <TextView
         android:id="@+id/tv_textView"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
@@ -50,7 +50,7 @@
         app:layout_constraintBottom_toBottomOf="@id/guideline2"
         android:text="Scan something..."
         android:textColor="@android:color/black"
-        android:textSize="19dp" />
+        android:textSize="19dp" /> -->
 
     <ListView
         android:id="@+id/listView"

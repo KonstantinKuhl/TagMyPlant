@@ -2,6 +2,7 @@ package de.codeyourapp.tagmyplant;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -9,6 +10,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -18,6 +20,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -78,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void codeScanner() {
         // create a net object for the text view element
-        TextView tv_textView = findViewById(R.id.tv_textView);
+        //TextView tv_textView = findViewById(R.id.tv_textView);
 
         // get the scanner_view object that was created in the activity_main.xml layout file
         CodeScannerView scannerView = findViewById(R.id.scanner_view);
@@ -101,10 +104,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {  // override the run() function of the Runnable interface
                         // show the last decoded text in the TextView element below the CodeScanner
-                        tv_textView.setText("Last Scan: "+result.getText());
+                        //tv_textView.setText("Last Scan: "+result.getText());
 
                         // add result to the dynamic listView below the scanner
-                        stringArrayList.add("Scan "+(stringArrayAdapter.getCount()+1)+": "+result.getText());
+                        stringArrayList.add("Scan: "+result.getText());
 
                         // update the dynamic listView over its adapter
                         stringArrayAdapter.notifyDataSetChanged();
@@ -191,6 +194,9 @@ public class MainActivity extends AppCompatActivity {
 
         // set the adapter of the listView element
         listView.setAdapter(stringArrayAdapter);
+
+        // initialize deletion when an item in the list view is pressed long
+        initDeletion();
     }
 
     private void showScanResults(){
@@ -223,6 +229,31 @@ public class MainActivity extends AppCompatActivity {
         if (stringArrayList == null){
             stringArrayList = new ArrayList<>();
         }
+    }
+
+    private void initDeletion(){
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                final int item = i;
+
+                new AlertDialog.Builder(MainActivity.this, R.style.AlertDialogCustom)
+                        .setIcon(android.R.drawable.ic_delete)
+                        .setTitle("Are you sure?")
+                        .setMessage("Do you want to delete this item?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                stringArrayList.remove(item);
+                                stringArrayAdapter.notifyDataSetChanged();
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
+                return true;
+            }
+        });
     }
 }
 

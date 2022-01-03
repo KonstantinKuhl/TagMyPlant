@@ -1,15 +1,18 @@
 package de.codeyourapp.tagmyplant;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -68,6 +71,9 @@ public class SwipeUpActivity extends AppCompatActivity {
 
         // set the adapter of the listView element
         listView.setAdapter(stringArrayAdapter);
+
+        // initialize deletion when an item in the list view is pressed long
+        initDeletion();
     }
 
     private void showScanner(){
@@ -100,5 +106,30 @@ public class SwipeUpActivity extends AppCompatActivity {
         if (stringArrayList == null){
             stringArrayList = new ArrayList<>();
         }
+    }
+
+    private void initDeletion(){
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                final int item = i;
+
+                new AlertDialog.Builder(SwipeUpActivity.this, R.style.AlertDialogCustom)
+                        .setIcon(android.R.drawable.ic_delete)
+                        .setTitle("Are you sure?")
+                        .setMessage("Do you want to delete this item?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                stringArrayList.remove(item);
+                                stringArrayAdapter.notifyDataSetChanged();
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
+                return true;
+            }
+        });
     }
 }
