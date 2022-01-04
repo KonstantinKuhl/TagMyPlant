@@ -58,7 +58,7 @@ public class SwipeUpActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();                    // do what is usually done
-        saveDataNew();                         // save the data of the listView element in the storage
+        saveData();                         // save the data of the listView element in the storage
     }
 
     // initializes the dynamic listView element
@@ -68,7 +68,7 @@ public class SwipeUpActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.listView);
 
         // load the scanned data from the storage in form of an arrayList
-        loadDataNew();
+        loadData();
 
         // constructor call for the string array adapter and set context and layout
         // stringArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, stringArrayList);
@@ -98,33 +98,12 @@ public class SwipeUpActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
-        String json = gson.toJson(stringArrayList);
-        editor.putString(mainArrayList, json);
-        editor.apply();
-    }
-
-    private void saveDataNew(){
-        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Gson gson = new Gson();
         String json = gson.toJson(scanArrayList);
         editor.putString(mainArrayList, json);
         editor.apply();
     }
 
     private void loadData(){
-        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = sharedPreferences.getString(mainArrayList, null);
-        Type type = new TypeToken<ArrayList<String>>() {}.getType();
-        stringArrayList = gson.fromJson(json, type);
-
-        if (stringArrayList == null){
-            stringArrayList = new ArrayList<>();
-        }
-    }
-
-    private void loadDataNew(){
         SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString(mainArrayList, null);
