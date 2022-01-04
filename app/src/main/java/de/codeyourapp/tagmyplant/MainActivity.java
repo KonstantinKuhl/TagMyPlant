@@ -41,6 +41,8 @@ import com.google.zxing.Result;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -53,10 +55,20 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> stringArrayList;
     private ArrayAdapter<String> stringArrayAdapter;
 
+    /* new ArrayList for more complicate items*/
+    private ArrayList<Scan> scanArrayList = new ArrayList<>();
+    private ScanAdapter scanAdapter;
+
+    /* to get the current date and time*/
+    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+
     /* button and intent variables */
     private Button showScanResultsButton;
 
     /* variables for data saving */
+    //private static final String mainArrayList = "mainArrayList";
+
+    /* variables for data saving after listView item Update*/
     private static final String mainArrayList = "mainArrayList";
 
     @Override
@@ -107,10 +119,16 @@ public class MainActivity extends AppCompatActivity {
                         //tv_textView.setText("Last Scan: "+result.getText());
 
                         // add result to the dynamic listView below the scanner
-                        stringArrayList.add("Scan: "+result.getText());
+                        //stringArrayList.add("Scan: "+result.getText());
+
+                        // add date, time and result to the scanArrayList
+                        scanArrayList.add(new Scan("date and time: " + sdf.format(new Date()), "scan result: " + result.getText()));
 
                         // update the dynamic listView over its adapter
-                        stringArrayAdapter.notifyDataSetChanged();
+                        //stringArrayAdapter.notifyDataSetChanged();
+
+                        // update the dynamic listView over its adapter
+                        scanAdapter.notifyDataSetChanged();
                     }
                 });
             }
@@ -150,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();                    // do what is usually done
         mCodeScanner.releaseResources();    // avoid memory leaks and release Resources for better performance
-        saveData();                         // save the data of the listView element in the storage
+        saveDataNew();                         // save the data of the listView element in the storage
     }
 
     private void setupPermissions(){
@@ -187,13 +205,17 @@ public class MainActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.listView);
 
         // load the scan data from storage in form of a ArrayList
-        loadData();
+        loadDataNew();
 
         // constructor call for the string array adapter and set context and layout
-        stringArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1,stringArrayList);
+        // stringArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1,stringArrayList);
+
+        // new array adapter for more complex listView
+        scanAdapter = new ScanAdapter(this, R.layout.list_view_item, scanArrayList);
 
         // set the adapter of the listView element
-        listView.setAdapter(stringArrayAdapter);
+        //listView.setAdapter(stringArrayAdapter);
+        listView.setAdapter(scanAdapter);
 
         // initialize deletion when an item in the list view is pressed long
         initDeletion();
@@ -219,6 +241,15 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
+    private void saveDataNew(){
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(scanArrayList);
+        editor.putString(mainArrayList, json);
+        editor.apply();
+    }
+
     private void loadData(){
         SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
         Gson gson = new Gson();
@@ -230,6 +261,19 @@ public class MainActivity extends AppCompatActivity {
             stringArrayList = new ArrayList<>();
         }
     }
+
+    private void loadDataNew(){
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(mainArrayList, null);
+        Type type = new TypeToken<ArrayList<Scan>>() {}.getType();
+        scanArrayList = gson.fromJson(json, type);
+
+        if (scanArrayList == null){
+            scanArrayList = new ArrayList<>();
+        }
+    }
+
 
     private void initDeletion(){
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -245,8 +289,8 @@ public class MainActivity extends AppCompatActivity {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                stringArrayList.remove(item);
-                                stringArrayAdapter.notifyDataSetChanged();
+                                scanArrayList.remove(item);
+                                scanAdapter.notifyDataSetChanged();
                             }
                         })
                         .setNegativeButton("No", null)

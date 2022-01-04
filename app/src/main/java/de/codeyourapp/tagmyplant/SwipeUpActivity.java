@@ -32,6 +32,10 @@ public class SwipeUpActivity extends AppCompatActivity {
     private ArrayList<String> stringArrayList;
     private ArrayAdapter<String> stringArrayAdapter;
 
+    /* new ArrayList for more complicate items*/
+    private ArrayList<Scan> scanArrayList = new ArrayList<>();
+    private ScanAdapter scanAdapter;
+
     /* button and intent variables*/
     private Button showScannerButton;
 
@@ -54,7 +58,7 @@ public class SwipeUpActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();                    // do what is usually done
-        saveData();                         // save the data of the listView element in the storage
+        saveDataNew();                         // save the data of the listView element in the storage
     }
 
     // initializes the dynamic listView element
@@ -64,13 +68,16 @@ public class SwipeUpActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.listView);
 
         // load the scanned data from the storage in form of an arrayList
-        loadData();
+        loadDataNew();
 
         // constructor call for the string array adapter and set context and layout
-        stringArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, stringArrayList);
+        // stringArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, stringArrayList);
+
+        // new array adapter for more complex listView
+        scanAdapter = new ScanAdapter(this, R.layout.list_view_item, scanArrayList);
 
         // set the adapter of the listView element
-        listView.setAdapter(stringArrayAdapter);
+        listView.setAdapter(scanAdapter);
 
         // initialize deletion when an item in the list view is pressed long
         initDeletion();
@@ -96,6 +103,15 @@ public class SwipeUpActivity extends AppCompatActivity {
         editor.apply();
     }
 
+    private void saveDataNew(){
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(scanArrayList);
+        editor.putString(mainArrayList, json);
+        editor.apply();
+    }
+
     private void loadData(){
         SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
         Gson gson = new Gson();
@@ -105,6 +121,18 @@ public class SwipeUpActivity extends AppCompatActivity {
 
         if (stringArrayList == null){
             stringArrayList = new ArrayList<>();
+        }
+    }
+
+    private void loadDataNew(){
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(mainArrayList, null);
+        Type type = new TypeToken<ArrayList<Scan>>() {}.getType();
+        scanArrayList = gson.fromJson(json, type);
+
+        if (scanArrayList == null){
+            scanArrayList = new ArrayList<>();
         }
     }
 
@@ -122,8 +150,8 @@ public class SwipeUpActivity extends AppCompatActivity {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                stringArrayList.remove(item);
-                                stringArrayAdapter.notifyDataSetChanged();
+                                scanArrayList.remove(item);
+                                scanAdapter.notifyDataSetChanged();
                             }
                         })
                         .setNegativeButton("No", null)
