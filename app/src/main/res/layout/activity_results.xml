@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- URLs for the XML meta files are set! -->
+<!-- The width and height shall fill out the parent structure! -->
+<!-- This XML-file is used for the ResultsActivity!-->
+<!-- An ID is set so that one can address this layout! -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ResultsActivity"
+    android:id="@+id/constraintLayout">
+
+
+    <!-- This guideline is used so that the layout has the same relations on all screen sizes! -->
+    <!-- An ID is set so that one can address this guideline! -->
+    <!-- The dimensions are set so that the structure wraps its content! -->
+    <!-- It is a horizontal guideline! -->
+    <!-- It is set to 92 percent of the screensize starting from the top.-->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".92"/>
+
+
+    <!-- This listView element is used to show the scanned data at the screen! -->
+    <!-- An ID is set so that one can address this element! -->
+    <!-- The width shall match the parent structure! -->
+    <!-- The height is controlled by two constraints: -->
+        <!-- The top of the listView shall start at the top of the screen / its parent! -->
+        <!-- The bottom of the listView shall end at guideline3! -->
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3" />
+
+
+    <!-- This button is used to get back to the MainActivity! -->
+    <!-- An ID is set so that one can address this button! -->
+    <!-- The width shall match the parent structure! -->
+    <!-- The height is controlled by two constraints: -->
+        <!-- The top of the button shall start at guideline3 -->
+        <!-- The bottom of the listView shall end at the bottom of the screen / its parent! -->
+    <Button
+        android:id="@+id/scannerButton"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="back to scanner"
+        app:layout_constraintTop_toBottomOf="@+id/guideline3"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,26 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
+<!-- Padding for a distance of  16 dp on all sites! -->
+<!-- The width and height shall fill out the parent structure! -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:padding="16dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+    <!-- An ID is set so that one can address this element! -->
+    <!-- The element shall only be as big as its content! -->
+    <!-- The distance to the left is set to 10 dp! -->
+    <!-- The Appearance of the TextView element is set as a title -->
+    <!-- Its initial text shall be "Date" -->
     <TextView
         android:id="@+id/txtDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         style="@style/TextAppearance.AppCompat.Title"
-        android:text="Date"
-        />
+        android:text="Date" />
 
+    <!-- An ID is set so that one can address this element! -->
+    <!-- The element is set to stay below the txtDate-element-->
+    <!-- The element shall only be as big as its content! -->
+    <!-- The distance to the left is set to 20 dp! -->
+    <!-- The Appearance of the TextView element is set as a subtitle! -->
+    <!-- Its initial text shall be "scan result"! -->
     <TextView
-        android:id="@+id/txtScanResult"
-        style="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
+        android:id="@+id/txtScanResultHeadline"
         android:layout_below="@+id/txtDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:text="Scan Result" />
+        style="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
+        android:text="scan result:" />
+
+
+    <!-- An ID is set so that one can address this element! -->
+    <!-- The element is set to stay below the txtScanResultHeadline-element-->
+    <!-- The element shall only be as big as its content! -->
+    <!-- The distance to the left is set to 20 dp! -->
+    <!-- Its initial text shall be "scan result data"! -->
+    <TextView
+        android:id="@+id/txtScanResult"
+        android:layout_below="@+id/txtScanResultHeadline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:text="Scan Result Data" />
 
 </RelativeLayout>

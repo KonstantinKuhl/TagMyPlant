@@ -1,31 +1,22 @@
 package de.codeyourapp.tagmyplant;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.budiyev.android.codescanner.AutoFocusMode;
@@ -108,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {  // override the run() function of the Runnable interface
 
                         // add date, time and result to the scanArrayList
-                        scanArrayList.add(new Scan("date and time: " + sdf.format(new Date()), "scan result: " + result.getText()));
+                        scanArrayList.add(new Scan("date and time: " + sdf.format(new Date()), result.getText()));
 
                         // update the dynamic listView via its adapter
                         scanAdapter.notifyDataSetChanged();
@@ -211,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         initDeletion();
     }
 
-    // Function to change the screen for the other/second activity: SwipeUpActivity
+    // Function to change the screen for the other/second activity: ResultsActivity
     private void showScanResults(){
         // get the button from the XML-file activity_main.xml
         showScanResultsButton = (Button) findViewById(R.id.resultButton);
@@ -219,14 +210,14 @@ public class MainActivity extends AppCompatActivity {
         showScanResultsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // when the button is pressed generate an intent and call it to change the activity to the "SwipeUpActivity"
-                Intent intentResults = new Intent(MainActivity.this, SwipeUpActivity.class);
+                // when the button is pressed generate an intent and call it to change the activity to the "ResultsActivity"
+                Intent intentResults = new Intent(MainActivity.this, ResultsActivity.class);
                 startActivity(intentResults);
             }
         });
     }
 
-    // Function to store the scan-result-data persistent in the memory
+    // Function to store the scan-result-data persistent in the memory of the phone
     private void saveData(){
         // SharedPreferences is a key, value pair system for storing data of an application
         // create an instance
@@ -234,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
         // create an instance of an editor for the shared preferences
         SharedPreferences.Editor editor = sharedPreferences.edit();
         // create a Gson instance to fill the sharedPreferences with Strings
+        // Gson is a simple library to serialize Java objects to JSON
         Gson gson = new Gson();
         // use the Gson instance to create a json String
         String json = gson.toJson(scanArrayList);
