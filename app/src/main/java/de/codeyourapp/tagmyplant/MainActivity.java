@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         // initialize the dynamic listView element below the scanner
         initListView();
 
-        // change activitiy when button ist pressed: resultActivity
+        // change activity when button ist pressed: resultActivity
         showScanResults();
 
     }
